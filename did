@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Minimal setup for Codespaces/Gitpod dev container
+# (Installs Node via nvm, then installs dependencies)
+
+# Avoid running as non-root in some environments; assume root available in container
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y curl git build-essential python3 python3-pip wget unzip
+
+export NVM_DIR="/root/.nvm"
+mkdir -p "$NVM_DIR"
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+# shellcheck source=/dev/null
+. "$NVM_DIR/nvm.sh"
+
+# Install Node versions and use 16 by default (backend requires >=16)
+nvm install 16
+nvm install 12
+nvm alias default 16
+
+# Ensure a modern npm
+npm install -g npm@9
+
+# Install repo dependencies
+npm ci
+if [ -d backend ]; then
+  (cd backend && npm ci || true)
+fi
+
+# Make sure appdata exists so backend can create files
+mkdir -p appdata appdata/logs
