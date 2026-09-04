@@ -1,0 +1,18 @@
+{
+  "name": "YoutubeDL-Material Dev Container",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "forwardPorts": [4200, 17442],
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-tslint-plugin",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}
