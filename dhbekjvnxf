@@ -1,0 +1,29 @@
+# Gitpod config: installs deps and starts backend + frontend, forwards ports
+image: gitpod/workspace-full:latest
+
+ports:
+  - port: 4200
+    onOpen: open-preview
+  - port: 17442
+    onOpen: ignore
+
+tasks:
+  - init: |
+      npm ci
+      if [ -d backend ]; then
+        (cd backend && npm ci) || true
+      fi
+    command: |
+      # set debug mode for CORS to accept localhost:4200
+      export YTDL_MODE=debug
+      # start backend and frontend; keep running in the workspace
+      if [ -d backend ]; then
+        (cd backend && node app.js) &
+      fi
+      npm run codespaces -- --host 0.0.0.0 --port 4200
+
+vscode:
+  extensions:
+    - ms-vscode.vscode-typescript-tslint-plugin
+    - esbenp.prettier-vscode
+    - dbaeumer.vscode-eslint
