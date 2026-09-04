@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Start backend (development mode) and frontend dev server
+# Export debug mode so the backend allows frontend origin in CORS
+export YTDL_MODE=debug
+
+# Start backend in background (use node directly for dev; avoids pm2 requirement)
+if [ -d backend ]; then
+  echo "Starting backend..."
+  (cd backend && node app.js) &
+  BACKEND_PID=$!
+else
+  echo "No backend directory found."
+fi
+
+# Start Angular dev server on 0.0.0.0 so Codespaces/Gitpod can expose it
+echo "Starting frontend (Angular)..."
+# Use the 'codespaces' script which exists in package.json; add host/port flags if needed
+npm run codespaces -- --host 0.0.0.0 --port 4200 &
+FRONTEND_PID=$!
+
+# Wait on both processes
+wait ${FRONTEND_PID:-0} ${BACKEND_PID:-0}
